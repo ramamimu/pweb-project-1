@@ -6,6 +6,11 @@ const router = createRouter({
   routes: [
     {
       path: "/",
+      name: "clock",
+      component: () => import("../views/Clock.vue"),
+    },
+    {
+      path: "/home",
       name: "home",
       component: HomeView,
     },
