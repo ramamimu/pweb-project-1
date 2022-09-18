@@ -16,7 +16,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-screen font-monsterrat">
+  <div class="h-screen">
     <div
       class="container mx-auto flex h-full flex-col items-center justify-center border"
     >
@@ -24,7 +24,7 @@ onMounted(() => {
         <div class="flex w-full justify-between gap-20 border pl-10">
           <ul class="flex gap-10">
             <li
-              class="m-2 cursor-pointer rounded-xl border bg-white px-4 py-1 shadow-sm transition-all hover:translate-x-[1px] hover:translate-y-[0.5px] hover:shadow-md active:translate-x-[-0.5px] active:translate-y-[-0.5px]"
+              class="m-2 cursor-pointer rounded-xl border bg-white px-4 py-1 shadow-sm transition-all hover:translate-x-[1px] hover:translate-y-[-0.5px] hover:shadow-md active:translate-x-[1px] active:translate-y-[2px]"
               @click="LOGIC_UI_STATE.changeView('alarm')"
             >
               Alarm
@@ -41,10 +41,10 @@ onMounted(() => {
         <div
           class="flex h-72 w-full flex-col items-center justify-center border bg-blue-100"
         >
-          <div v-if="LOGIC_UI_STATE.clock.digitalClock"><DigitalClock /></div>
-          <div v-if="LOGIC_UI_STATE.clock.alarm"><Alarm /></div>
-          <div v-if="LOGIC_UI_STATE.clock.timer"><Timer /></div>
-          <div v-if="LOGIC_UI_STATE.clock.stopwatch"><Stopwatch /></div>
+          <DigitalClock :isShow="LOGIC_UI_STATE.clock.digitalClock" />
+          <Alarm :isShow="LOGIC_UI_STATE.clock.alarm" />
+          <Stopwatch :isShow="LOGIC_UI_STATE.clock.stopwatch" />
+          <Timer :isShow="LOGIC_UI_STATE.clock.timer" />
         </div>
       </div>
     </div>
