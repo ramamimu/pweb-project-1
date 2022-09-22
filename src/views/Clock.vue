@@ -10,36 +10,53 @@ import { onMounted } from "vue";
 const CLOCK_STATE = useClock();
 const LOGIC_UI_STATE = useLogicUI();
 
+interface ClockButtons {
+  alarm: string;
+  timer: string;
+  stopwatch: string;
+}
+
+const clockButtons: ClockButtons = {
+  alarm: "alarm",
+  timer: "timer",
+  stopwatch: "stopwatch",
+};
+
 onMounted(() => {
   CLOCK_STATE.startClock();
 });
 </script>
 
 <template>
-  <div class="h-screen">
-    <div
-      class="container mx-auto flex h-full flex-col items-center justify-center border"
-    >
-      <div class="w-[600px] border bg-slate-100">
-        <div class="flex w-full justify-between gap-20 border pl-10">
+  <div class="h-screen bg-slate-50">
+    <div class="container mx-auto flex h-full flex-col items-center justify-center">
+      <h2 class="p-5 text-3xl font-extrabold text-slate-600">Clock APP</h2>
+      <div
+        class="w-[600px] rounded-3xl bg-white p-2 shadow-md transition-shadow duration-500 hover:shadow-2xl"
+      >
+        <div class="flex w-full items-center justify-between gap-2 p-2 pl-5">
           <ul class="flex gap-10">
             <li
-              class="m-2 cursor-pointer rounded-xl border bg-white px-4 py-1 shadow-sm transition-all hover:translate-x-[1px] hover:translate-y-[-0.5px] hover:shadow-md active:translate-x-[1px] active:translate-y-[2px]"
-              @click="LOGIC_UI_STATE.changeView('alarm')"
+              v-for="clockButton in clockButtons"
+              :key="clockButton"
+              class="m-2 cursor-pointer rounded-xl border bg-white px-4 py-1 text-sm text-slate-600 shadow-sm transition-all duration-150 hover:translate-x-[1px] hover:translate-y-[-0.5px] hover:shadow-md active:translate-x-[1px] active:translate-y-[2px]"
+              @click="LOGIC_UI_STATE.changeView(clockButton)"
             >
-              Alarm
+              {{ clockButton }}
             </li>
-            <li @click="LOGIC_UI_STATE.changeView('timer')">timer</li>
-            <li @click="LOGIC_UI_STATE.changeView('stopwatch')">stopwatch</li>
           </ul>
-          <div class="mr-10" @click="LOGIC_UI_STATE.changeView('digitalClock')">
-            {{
-              `${CLOCK_STATE.getHours}:${CLOCK_STATE.getMinutes}:${CLOCK_STATE.getSeconds}`
-            }}
+          <div
+            :class="{
+              'mr-10 cursor-pointer rounded-md p-2 text-sm font-semibold text-slate-600 shadow-inner transition-opacity duration-300 hover:shadow-xl': true,
+              'opacity-0': LOGIC_UI_STATE.clock.digitalClock,
+            }"
+            @click="LOGIC_UI_STATE.changeView('digitalClock')"
+          >
+            {{ `${CLOCK_STATE.getHours}:${CLOCK_STATE.getMinutes}:${CLOCK_STATE.getSeconds}` }}
           </div>
         </div>
         <div
-          class="flex h-72 w-full flex-col items-center justify-center border bg-blue-100"
+          class="flex h-72 w-full flex-col items-center justify-center rounded-b-3xl bg-slate-50 shadow-inner"
         >
           <DigitalClock :isShow="LOGIC_UI_STATE.clock.digitalClock" />
           <Alarm :isShow="LOGIC_UI_STATE.clock.alarm" />
