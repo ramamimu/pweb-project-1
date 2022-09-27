@@ -12,9 +12,11 @@ const props = defineProps({
 </script>
 
 <template>
-  <div v-if="props.isShow" class="text-6xl text-slate-700">
+  <div v-show="props.isShow" class="text-6xl text-slate-700">
     <h1>
-      {{ `${CLOCK_STATE.getHours}:${CLOCK_STATE.getMinutes}:${CLOCK_STATE.getSeconds}` }}
+      {{
+        `${CLOCK_STATE.getHours}:${CLOCK_STATE.getMinutes}:${CLOCK_STATE.getSeconds}`
+      }}
     </h1>
   </div>
 </template>

@@ -6,11 +6,8 @@ import type {
   Stopwatch,
   Timer,
 } from "@/types/clock";
+import Audios from "@/assets/clock-alarm.mp3";
 import type { Ref } from "vue";
-
-const hourToMS = (hour: number) => hour * 60 * 60 * 1000;
-
-const minuteToMS = (min: number) => min * 60 * 1000;
 
 const getHour = (hour: number | string): number | string => {
   hour < 10 && (hour = "0" + hour.toString());
@@ -75,6 +72,7 @@ export const useLogicUI = defineStore("logicUI", () => {
       clock.stopwatch = true;
     }
   }
+
   return { clock, changeView };
 });
 
@@ -111,10 +109,16 @@ export const useClock = defineStore("clock", () => {
 export const useAlarm = defineStore("alarm", () => {
   const alarm: Ref<clockTypes[]> = ref([]);
 
-  function setAlarm(hour: number | string, minute: number | string) {
+  function setAlarm(
+    id: number,
+    hour: number | string,
+    minute: number | string
+  ) {
     let temp_alarm: clockTypes = {
+      id: id,
       hour: hour,
       minute: minute,
+      status: true,
     };
 
     const LEN_ALARM = alarm.value.length;
@@ -127,25 +131,58 @@ export const useAlarm = defineStore("alarm", () => {
     if (!flag) alarm.value.push(temp_alarm);
   }
 
-  return { alarm, setAlarm };
+  function selectAlarm(id: number | undefined) {}
+  function deleteAlarm(id: number | undefined) {}
+
+  return { alarm, setAlarm, selectAlarm, deleteAlarm };
 });
 
 export const useTimer = defineStore("timer", () => {
   const timer: Timer = reactive({
     hours: 0,
-    minutes: 1,
-    timerEnd: 0,
+    minutes: 0,
+    seconds: 0,
+    interval: 0,
     status: false,
   });
 
-  const setTimer = () => {
-    timer.status = !timer.status;
-    timer.timerEnd =
-      Date.now() + hourToMS(timer.hours) + minuteToMS(timer.minutes);
-    console.log(timer.timerEnd);
+  const msTimer: Ref<number> = ref(0);
+
+  const startTimer = (): void => {
+    if (timer.hours !== 0 || timer.minutes !== 0 || timer.seconds !== 0) {
+      timer.status = true;
+      let hourToMS = timer.hours * 60 * 60 * 1000;
+      let minuteToMS = timer.minutes * 60 * 1000;
+      let secondToMS = timer.seconds * 1000;
+
+      msTimer.value = new Date().getTime() + hourToMS + minuteToMS + secondToMS;
+
+      timer.interval = setInterval(() => {
+        let now = new Date().getTime();
+        let distance = msTimer.value - now;
+
+        let hours = Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        timer.hours = hours;
+        timer.minutes = minutes;
+        timer.seconds = seconds;
+      }, 1000);
+    }
   };
 
-  return { timer, setTimer };
+  const stopTimer = (): void => {
+    timer.status = false;
+    timer.hours = 0;
+    timer.minutes = 0;
+    timer.seconds = 0;
+    clearInterval(timer.interval);
+  };
+
+  return { timer, startTimer, stopTimer };
 });
 
 export const useStopwatch = defineStore("stopwatch", () => {
@@ -153,34 +190,48 @@ export const useStopwatch = defineStore("stopwatch", () => {
     current: 0,
     savedTime: 0,
     status: false,
+    isContinue: false,
   });
 
   const savedTimes: Ref<number[]> = ref([]);
   let interval: number = 0;
 
-  function updateStopwatch() {
+  function updateStopwatch(): void {
     stopwatch.current = new Date().getTime() - stopwatch.savedTime;
   }
 
-  function startStopwatch() {
+  function startStopwatch(): void {
     if (!stopwatch.status) {
       stopwatch.savedTime = new Date().getTime();
       stopwatch.status = true;
+      stopwatch.isContinue = false;
       savedTimes.value = [];
       interval = setInterval(updateStopwatch, 100);
     }
   }
 
-  function stopStopwatch() {
+  function stopStopwatch(): void {
+    stopwatch.isContinue = true;
+    clearInterval(interval);
+  }
+
+  function continueStopwatch(): void {
+    stopwatch.isContinue = false;
+    interval = setInterval(updateStopwatch, 100);
+  }
+
+  function resetStopwatch(): void {
     if (stopwatch.status) {
       clearInterval(interval);
+      savedTimes.value = [];
+      stopwatch.isContinue = false;
       stopwatch.status = false;
       stopwatch.current = 0;
     }
   }
 
-  function saveTime() {
-    savedTimes.value.push(stopwatch.current);
+  function saveTime(): void {
+    savedTimes.value.unshift(stopwatch.current);
   }
 
   const getHours = computed<number | string>(() => {
@@ -201,13 +252,39 @@ export const useStopwatch = defineStore("stopwatch", () => {
 
   return {
     stopwatch,
-    startStopwatch,
     getHours,
     getMinutes,
     getSeconds,
     getMiliseconds,
-    stopStopwatch,
-    saveTime,
     savedTimes,
+    startStopwatch,
+    stopStopwatch,
+    continueStopwatch,
+    resetStopwatch,
+    saveTime,
   };
+});
+
+export const useAudio = defineStore("audio", () => {
+  let audio: Ref<HTMLAudioElement | null> = ref(null);
+  let status: Ref<boolean> = ref(false);
+
+  function startAudio(): void {
+    if (!status.value) {
+      status.value = true;
+      audio.value = new Audio(Audios);
+      audio.value.play();
+      audio.value.loop = true;
+    }
+  }
+
+  async function stopAudio(): Promise<void> {
+    if (status.value) {
+      status.value = false;
+      await audio.value?.pause();
+      audio.value = null;
+    }
+  }
+
+  return { audio, startAudio, stopAudio };
 });

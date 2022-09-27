@@ -3,6 +3,7 @@ export type clockTypes = {
   minute: number | string;
   second?: number | string;
   status?: boolean;
+  id?: number;
 };
 
 export type currentClockTypes = {
@@ -15,7 +16,8 @@ export type currentClockTypes = {
 export interface Timer {
   hours: number;
   minutes: number;
-  timerEnd: number;
+  seconds: number;
+  interval: number;
   status?: boolean;
 }
 
@@ -23,4 +25,5 @@ export interface Stopwatch {
   current: number;
   savedTime: number;
   status: boolean;
+  isContinue: boolean;
 }

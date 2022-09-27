@@ -29,7 +29,9 @@ onMounted(() => {
 
 <template>
   <div class="h-screen bg-slate-50">
-    <div class="container mx-auto flex h-full flex-col items-center justify-center">
+    <div
+      class="container mx-auto flex h-full flex-col items-center justify-center"
+    >
       <h2 class="p-5 text-3xl font-extrabold text-slate-600">Clock APP</h2>
       <div
         class="w-[600px] rounded-3xl bg-white p-2 shadow-md transition-shadow duration-500 hover:shadow-2xl"
@@ -52,7 +54,9 @@ onMounted(() => {
             }"
             @click="LOGIC_UI_STATE.changeView('digitalClock')"
           >
-            {{ `${CLOCK_STATE.getHours}:${CLOCK_STATE.getMinutes}:${CLOCK_STATE.getSeconds}` }}
+            {{
+              `${CLOCK_STATE.getHours}:${CLOCK_STATE.getMinutes}:${CLOCK_STATE.getSeconds}`
+            }}
           </div>
         </div>
         <div
