@@ -102,7 +102,7 @@ const STOPWATCH_STATE = useStopwatch();
         :
         <p>{{ getFormatSecond(Math.floor((time / 1000) % 60)) }}</p>
         <p class="text-xs">
-          {{ getFormatMiliseconds(Math.floor(time % 100)) }}
+          {{ getFormatMiliseconds(Math.floor((time % 1000) / 10)) }}
         </p>
       </div>
     </div>
