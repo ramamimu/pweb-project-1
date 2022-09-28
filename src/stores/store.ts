@@ -47,6 +47,7 @@ export const useLogicUI = defineStore("logicUI", () => {
     alarm: false,
     timer: false,
     stopwatch: false,
+    popUp: false,
   });
 
   function changeView(currentState: string) {
@@ -147,6 +148,11 @@ export const useTimer = defineStore("timer", () => {
   });
 
   const msTimer: Ref<number> = ref(0);
+  const saveTimer: clockTypes = reactive({
+    hour: 0,
+    minute: 0,
+    second: 0,
+  });
 
   const startTimer = (): void => {
     if (timer.hours !== 0 || timer.minutes !== 0 || timer.seconds !== 0) {
@@ -156,6 +162,9 @@ export const useTimer = defineStore("timer", () => {
       let secondToMS = timer.seconds * 1000;
 
       msTimer.value = new Date().getTime() + hourToMS + minuteToMS + secondToMS;
+      saveTimer.hour = timer.hours;
+      saveTimer.minute = timer.minutes;
+      saveTimer.second = timer.seconds;
 
       timer.interval = setInterval(() => {
         let now = new Date().getTime();
@@ -179,10 +188,12 @@ export const useTimer = defineStore("timer", () => {
     timer.hours = 0;
     timer.minutes = 0;
     timer.seconds = 0;
+    const AUDIO_STATE = useAudio();
+    AUDIO_STATE.stopAudio();
     clearInterval(timer.interval);
   };
 
-  return { timer, startTimer, stopTimer };
+  return { timer, msTimer, saveTimer, startTimer, stopTimer };
 });
 
 export const useStopwatch = defineStore("stopwatch", () => {

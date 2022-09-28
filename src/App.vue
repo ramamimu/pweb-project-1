@@ -17,10 +17,5 @@ function stopAudio() {
 </script>
 
 <template>
-  test audio
-  <br />
-  <button @click="startAudio">click audio</button>
-  <br />
-  <button @click="stopAudio">stop audio</button>
   <RouterView />
 </template>

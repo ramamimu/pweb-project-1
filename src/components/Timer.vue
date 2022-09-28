@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useClock, useTimer } from "@/stores/store";
-import { reactive } from "vue";
+import { useClock, useTimer, useAudio, useLogicUI } from "@/stores/store";
+import { reactive, watch } from "vue";
 
 const props = defineProps({
   isShow: {
@@ -9,8 +9,20 @@ const props = defineProps({
   },
 });
 
-const CLOCK_STATE = useClock();
 const TIMER_STATE = useTimer();
+const AUDIO_STATE = useAudio();
+const LOGIC_UI_STATE = useLogicUI();
+
+watch(TIMER_STATE.timer, (newVal) => {
+  let now = new Date().getTime();
+  let distance = TIMER_STATE.msTimer;
+
+  if (now > distance && TIMER_STATE.timer.status) {
+    console.log("stop dong timernya");
+    AUDIO_STATE.startAudio();
+    LOGIC_UI_STATE.clock.popUp = true;
+  }
+});
 </script>
 <template>
   <div v-show="props.isShow">

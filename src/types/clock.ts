@@ -11,6 +11,7 @@ export type currentClockTypes = {
   alarm: boolean;
   timer: boolean;
   stopwatch: boolean;
+  popUp: boolean;
 };
 
 export interface Timer {

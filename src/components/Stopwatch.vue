@@ -97,8 +97,10 @@ const STOPWATCH_STATE = useStopwatch();
         :key="time"
       >
         <p>{{ getFormatHour(Math.floor(time / (60 * 60 * 1000))) }}</p>
+        :
         <p>{{ getFormatMinute(Math.floor(time / (60 * 1000))) }}</p>
-        <p>{{ getFormatSecond(Math.floor(time / 1000)) }}</p>
+        :
+        <p>{{ getFormatSecond(Math.floor((time / 1000) % 60)) }}</p>
         <p class="text-xs">
           {{ getFormatMiliseconds(Math.floor(time % 100)) }}
         </p>
