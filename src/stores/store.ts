@@ -109,6 +109,7 @@ export const useClock = defineStore("clock", () => {
 
 export const useAlarm = defineStore("alarm", () => {
   const alarm: Ref<clockTypes[]> = ref([]);
+  const isAlarmActive: Ref<boolean> = ref(false);
 
   function setAlarm(
     id: number,
@@ -127,15 +128,20 @@ export const useAlarm = defineStore("alarm", () => {
     for (let i = 0; i < LEN_ALARM; i++) {
       if (alarm.value[i].hour === hour && alarm.value[i].minute === minute) {
         flag = true;
+        alert("Alarm has added");
       }
     }
     if (!flag) alarm.value.push(temp_alarm);
+    alarm.value.sort((a: any, b: any) => {
+      return a.hour - b.hour || a.minute - b.minute;
+    });
   }
 
-  function selectAlarm(id: number | undefined) {}
-  function deleteAlarm(id: number | undefined) {}
+  function deleteAlarm(index: number) {
+    alarm.value.splice(index, 1);
+  }
 
-  return { alarm, setAlarm, selectAlarm, deleteAlarm };
+  return { alarm, isAlarmActive, setAlarm, deleteAlarm };
 });
 
 export const useTimer = defineStore("timer", () => {

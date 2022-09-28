@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useClock, useTimer, useAudio, useLogicUI } from "@/stores/store";
-import { reactive, watch } from "vue";
+import { useTimer, useAudio, useLogicUI } from "@/stores/store";
+import { watch } from "vue";
 
 const props = defineProps({
   isShow: {
@@ -18,7 +18,6 @@ watch(TIMER_STATE.timer, (newVal) => {
   let distance = TIMER_STATE.msTimer;
 
   if (now > distance && TIMER_STATE.timer.status) {
-    console.log("stop dong timernya");
     AUDIO_STATE.startAudio();
     LOGIC_UI_STATE.clock.popUp = true;
   }
@@ -36,6 +35,7 @@ watch(TIMER_STATE.timer, (newVal) => {
           placeholder="0"
           required
           v-model="TIMER_STATE.timer.hours"
+          :readonly="TIMER_STATE.timer.status"
         />
       </div>
       <p>:</p>
@@ -47,6 +47,7 @@ watch(TIMER_STATE.timer, (newVal) => {
           placeholder="0"
           class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
           v-model="TIMER_STATE.timer.minutes"
+          :readonly="TIMER_STATE.timer.status"
         />
       </div>
       <p>:</p>
@@ -58,6 +59,7 @@ watch(TIMER_STATE.timer, (newVal) => {
           placeholder="0"
           class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
           v-model="TIMER_STATE.timer.seconds"
+          :readonly="TIMER_STATE.timer.status"
         />
       </div>
     </div>

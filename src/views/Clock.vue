@@ -3,21 +3,13 @@ import DigitalClock from "@/components/DigitalClock.vue";
 import Alarm from "@/components/Alarm.vue";
 import Timer from "@/components/Timer.vue";
 import Stopwatch from "@/components/Stopwatch.vue";
+import PopUp from "@/components/PopUp.vue";
 
-import {
-  useClock,
-  useLogicUI,
-  useTimer,
-  useAlarm,
-  useAudio,
-} from "@/stores/store";
+import { useClock, useLogicUI } from "@/stores/store";
 import { onMounted } from "vue";
 
 const CLOCK_STATE = useClock();
 const LOGIC_UI_STATE = useLogicUI();
-const TIMER_STATE = useTimer();
-const ALARM_STATE = useAlarm();
-const AUDIO_STATE = useAudio();
 
 interface ClockButtons {
   alarm: string;
@@ -38,34 +30,7 @@ onMounted(() => {
 
 <template>
   <div class="h-screen bg-slate-50">
-    <div
-      v-if="LOGIC_UI_STATE.clock.popUp"
-      class="fixed top-0 z-40 flex h-screen w-full items-center justify-center bg-black bg-opacity-50"
-    >
-      <div
-        class="flex h-80 w-80 max-w-sm flex-col items-center justify-center gap-10 rounded-lg border border-gray-700 bg-gray-800 p-6 shadow-md"
-      >
-        <div>
-          <h5
-            class="mb-2 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white"
-            v-if="TIMER_STATE.timer.status"
-          >
-            Timer( {{ TIMER_STATE.saveTimer.hour }} :
-            {{ TIMER_STATE.saveTimer.minute }} :
-            {{ TIMER_STATE.saveTimer.second }} )
-          </h5>
-        </div>
-        <button
-          @click="
-            LOGIC_UI_STATE.clock.popUp = false;
-            TIMER_STATE.stopTimer();
-          "
-          class="flex h-14 w-14 items-center justify-center rounded-full bg-white pb-3 text-5xl font-bold"
-        >
-          x
-        </button>
-      </div>
-    </div>
+    <pop-up />
     <div
       class="container mx-auto flex h-full flex-col items-center justify-center"
     >

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { reactive, onMounted, nextTick } from "vue";
-import { useAlarm } from "@/stores/store";
+import { reactive, watch } from "vue";
+import { useAlarm, useClock, useAudio, useLogicUI } from "@/stores/store";
+import type { clockTypes } from "@/types/clock";
 
 const props = defineProps({
   isShow: {
@@ -10,6 +11,9 @@ const props = defineProps({
 });
 
 const ALARM_STATE = useAlarm();
+const CLOCK_STATE = useClock();
+const AUDIO_STATE = useAudio();
+const LOGIC_UI_STATE = useLogicUI();
 
 const currentAlarm: {
   hours: number;
@@ -22,32 +26,51 @@ const currentAlarm: {
 function addAlarm(e: any) {
   e.preventDefault();
 
-  ALARM_STATE.setAlarm(
-    new Date().getTime(),
-    currentAlarm.hours,
-    currentAlarm.minutes
-  );
-  currentAlarm.hours = 0;
-  currentAlarm.minutes = 0;
+  if (
+    currentAlarm.hours > 23 ||
+    currentAlarm.hours < 0 ||
+    currentAlarm.minutes > 59 ||
+    currentAlarm.minutes < 0
+  ) {
+    alert("Invalid input");
+  } else {
+    ALARM_STATE.setAlarm(
+      new Date().getTime(),
+      currentAlarm.hours,
+      currentAlarm.minutes
+    );
+    currentAlarm.hours = 0;
+    currentAlarm.minutes = 0;
+  }
 }
 
-function selectAlarm(event: any, id: number | undefined) {
-  ALARM_STATE.selectAlarm(id);
-  console.log(event.target.checked, id);
+function selectAlarm(event: any, time: clockTypes) {
+  time.status = event.target.checked;
 }
 
-function deleteAlarm(id: number | undefined) {
-  ALARM_STATE.deleteAlarm(id);
-  console.log("delete ", id);
+function deleteAlarm(index: number) {
+  ALARM_STATE.deleteAlarm(index);
 }
 
-onMounted(() => {
-  // for (let i = 0; i < 24; i++) {
-  //   i < 10 ? time.hours.push("0" + i.toString()) : time.hours.push(i.toString());
-  // }
-  // for (let i = 0; i < 60; i++) {
-  //   i < 10 ? time.minutes.push("0" + i.toString()) : time.minutes.push(i.toString());
-  // }
+watch(CLOCK_STATE, async () => {
+  let hour = CLOCK_STATE.getHours;
+  let minute = CLOCK_STATE.getMinutes;
+
+  ALARM_STATE.alarm.forEach(async (item) => {
+    if (item.hour === hour && item.minute == minute && item.status) {
+      AUDIO_STATE.startAudio();
+      item.status = false;
+      ALARM_STATE.isAlarmActive = true;
+      LOGIC_UI_STATE.clock.popUp = true;
+
+      setTimeout(() => {
+        item.status = true;
+        ALARM_STATE.isAlarmActive = false;
+        LOGIC_UI_STATE.clock.popUp = false;
+        AUDIO_STATE.stopAudio();
+      }, 60000);
+    }
+  });
 });
 </script>
 
@@ -92,7 +115,7 @@ onMounted(() => {
     >
       <div
         class="flex w-48 items-center justify-center"
-        v-for="time in ALARM_STATE.alarm"
+        v-for="(time, index) in ALARM_STATE.alarm"
         :key="`${time.hour}${time.minute}`"
       >
         <div class="w-52 p-5">
@@ -108,8 +131,8 @@ onMounted(() => {
           >
             <input
               type="checkbox"
-              @change="selectAlarm($event, time.id)"
-              checked
+              @change="selectAlarm($event, time)"
+              :checked="time.status"
               :id="time.id?.toString()"
               class="peer sr-only"
             />
@@ -118,7 +141,7 @@ onMounted(() => {
               bis_skin_checked="1"
             ></div>
           </label>
-          <div class="w-6 cursor-pointer" @click="deleteAlarm(time.id)">
+          <div class="w-6 cursor-pointer" @click="deleteAlarm(index)">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
