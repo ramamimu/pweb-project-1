@@ -5,11 +5,12 @@ import Timer from "@/components/Timer.vue";
 import Stopwatch from "@/components/Stopwatch.vue";
 import PopUp from "@/components/PopUp.vue";
 
-import { useClock, useLogicUI } from "@/stores/store";
-import { onMounted } from "vue";
+import { useAlarm, useClock, useLogicUI } from "@/stores/store";
+import { onMounted, onBeforeMount } from "vue";
 
 const CLOCK_STATE = useClock();
 const LOGIC_UI_STATE = useLogicUI();
+const ALARM_STATE = useAlarm();
 
 interface ClockButtons {
   alarm: string;
@@ -22,6 +23,13 @@ const clockButtons: ClockButtons = {
   timer: "timer",
   stopwatch: "stopwatch",
 };
+
+onBeforeMount(() => {
+  const cat = localStorage.getItem("alarm");
+  if (cat) {
+    ALARM_STATE.alarm = JSON.parse(cat);
+  }
+});
 
 onMounted(() => {
   CLOCK_STATE.startClock();

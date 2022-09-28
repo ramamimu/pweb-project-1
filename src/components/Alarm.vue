@@ -23,6 +23,10 @@ const currentAlarm: {
   minutes: 0,
 });
 
+function updateStorage() {
+  localStorage.setItem("alarm", JSON.stringify(ALARM_STATE.alarm));
+}
+
 function addAlarm(e: any) {
   e.preventDefault();
 
@@ -42,14 +46,17 @@ function addAlarm(e: any) {
     currentAlarm.hours = 0;
     currentAlarm.minutes = 0;
   }
+  updateStorage();
 }
 
 function selectAlarm(event: any, time: clockTypes) {
   time.status = event.target.checked;
+  updateStorage();
 }
 
 function deleteAlarm(index: number) {
   ALARM_STATE.deleteAlarm(index);
+  updateStorage();
 }
 
 watch(CLOCK_STATE, async () => {
@@ -62,12 +69,14 @@ watch(CLOCK_STATE, async () => {
       item.status = false;
       ALARM_STATE.isAlarmActive = true;
       LOGIC_UI_STATE.clock.popUp = true;
+      updateStorage();
 
       setTimeout(() => {
         item.status = true;
         ALARM_STATE.isAlarmActive = false;
         LOGIC_UI_STATE.clock.popUp = false;
         AUDIO_STATE.stopAudio();
+        updateStorage();
       }, 60000);
     }
   });
