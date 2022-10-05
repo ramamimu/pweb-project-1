@@ -38,3 +38,17 @@ npm run dev
 ```sh
 npm run build
 ```
+
+## To Do
+
+[x] title in alarm
+
+[x] change alert being popup props
+
+[] snooze
+
+- edit options
+
+[] repeatable alarm in daily or pick in calendar
+
+[] custom alarm sound

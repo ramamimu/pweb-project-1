@@ -50,6 +50,8 @@ export const useLogicUI = defineStore("logicUI", () => {
     popUp: false,
   });
 
+  const popUpAlarmTitle: Ref<string | undefined> = ref("");
+
   function changeView(currentState: string) {
     if (currentState === "digitalClock") {
       clock.digitalClock = true;
@@ -74,7 +76,7 @@ export const useLogicUI = defineStore("logicUI", () => {
     }
   }
 
-  return { clock, changeView };
+  return { clock, popUpAlarmTitle, changeView };
 });
 
 export const useClock = defineStore("clock", () => {
@@ -114,24 +116,31 @@ export const useAlarm = defineStore("alarm", () => {
   function setAlarm(
     id: number,
     hour: number | string,
-    minute: number | string
+    minute: number | string,
+    title: string
   ) {
     let temp_alarm: clockTypes = {
       id: id,
       hour: hour,
       minute: minute,
+      title: title,
       status: true,
     };
+
+    const TOAST_STATE = useToast();
 
     const LEN_ALARM = alarm.value.length;
     let flag = false;
     for (let i = 0; i < LEN_ALARM; i++) {
       if (alarm.value[i].hour === hour && alarm.value[i].minute === minute) {
         flag = true;
-        alert("Alarm has added");
+        TOAST_STATE.showToast("time has been added", false);
       }
     }
-    if (!flag) alarm.value.push(temp_alarm);
+    if (!flag) {
+      alarm.value.push(temp_alarm);
+      TOAST_STATE.showToast("Time added", true);
+    }
     alarm.value.sort((a: any, b: any) => {
       return a.hour - b.hour || a.minute - b.minute;
     });
@@ -304,4 +313,32 @@ export const useAudio = defineStore("audio", () => {
   }
 
   return { audio, startAudio, stopAudio };
+});
+
+export const useToast = defineStore("toast", () => {
+  interface Toast {
+    status: boolean;
+    message: string;
+    isSuccess: boolean;
+  }
+  const toast: Ref<Toast> = ref({
+    status: false,
+    message: "",
+    isSuccess: false,
+  });
+
+  function showToast(message: string, isSuccess: boolean): void {
+    toast.value.status = true;
+    toast.value.message = message;
+    toast.value.isSuccess = isSuccess;
+    setTimeout(() => {
+      hideToast();
+    }, 3000);
+  }
+
+  function hideToast(): void {
+    toast.value.status = false;
+  }
+
+  return { toast, showToast, hideToast };
 });

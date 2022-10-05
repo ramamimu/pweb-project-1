@@ -28,12 +28,16 @@ const CLOCK_STATE = useClock();
           v-if="ALARM_STATE.isAlarmActive"
         >
           Alarm( {{ CLOCK_STATE.getHours }} : {{ CLOCK_STATE.getMinutes }} )
+          <br />
+          event: {{ LOGIC_UI_STATE.popUpAlarmTitle }}
+          <br />
         </h5>
       </div>
       <button
         @click="
           LOGIC_UI_STATE.clock.popUp = false;
           TIMER_STATE.stopTimer();
+          ALARM_STATE.isAlarmActive = false;
         "
         class="flex h-14 w-14 items-center justify-center rounded-full bg-white pb-3 text-5xl font-bold"
       >

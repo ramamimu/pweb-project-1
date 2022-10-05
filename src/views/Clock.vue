@@ -4,13 +4,15 @@ import Alarm from "@/components/Alarm.vue";
 import Timer from "@/components/Timer.vue";
 import Stopwatch from "@/components/Stopwatch.vue";
 import PopUp from "@/components/PopUp.vue";
+import Toast from "@/components/Toast.vue";
 
-import { useAlarm, useClock, useLogicUI } from "@/stores/store";
+import { useAlarm, useClock, useLogicUI, useToast } from "@/stores/store";
 import { onMounted, onBeforeMount } from "vue";
 
 const CLOCK_STATE = useClock();
 const LOGIC_UI_STATE = useLogicUI();
 const ALARM_STATE = useAlarm();
+const TOAST_STATE = useToast();
 
 interface ClockButtons {
   alarm: string;
@@ -39,6 +41,7 @@ onMounted(() => {
 <template>
   <div class="h-screen bg-slate-50">
     <pop-up />
+    <toast v-if="TOAST_STATE.toast.status" />
     <div
       class="container mx-auto flex h-full flex-col items-center justify-center"
     >

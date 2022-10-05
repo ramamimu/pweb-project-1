@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { reactive, watch } from "vue";
-import { useAlarm, useClock, useAudio, useLogicUI } from "@/stores/store";
+import {
+  useAlarm,
+  useClock,
+  useAudio,
+  useLogicUI,
+  useToast,
+} from "@/stores/store";
 import type { clockTypes } from "@/types/clock";
 
 const props = defineProps({
@@ -14,13 +20,16 @@ const ALARM_STATE = useAlarm();
 const CLOCK_STATE = useClock();
 const AUDIO_STATE = useAudio();
 const LOGIC_UI_STATE = useLogicUI();
+const TOAST_STATE = useToast();
 
 const currentAlarm: {
   hours: number;
   minutes: number;
+  title: string;
 } = reactive({
   hours: 0,
   minutes: 0,
+  title: "",
 });
 
 function updateStorage() {
@@ -36,15 +45,17 @@ function addAlarm(e: any) {
     currentAlarm.minutes > 59 ||
     currentAlarm.minutes < 0
   ) {
-    alert("Invalid input");
+    TOAST_STATE.showToast("Invalid time", false);
   } else {
     ALARM_STATE.setAlarm(
       new Date().getTime(),
       currentAlarm.hours,
-      currentAlarm.minutes
+      currentAlarm.minutes,
+      currentAlarm.title
     );
     currentAlarm.hours = 0;
     currentAlarm.minutes = 0;
+    currentAlarm.title = "";
   }
   updateStorage();
 }
@@ -69,6 +80,7 @@ watch(CLOCK_STATE, async () => {
       item.status = false;
       ALARM_STATE.isAlarmActive = true;
       LOGIC_UI_STATE.clock.popUp = true;
+      LOGIC_UI_STATE.popUpAlarmTitle = item.title;
       updateStorage();
 
       setTimeout(() => {
@@ -95,7 +107,6 @@ watch(CLOCK_STATE, async () => {
             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
             placeholder="0"
             v-model="currentAlarm.hours"
-            required
           />
         </div>
         <p>:</p>
@@ -109,6 +120,14 @@ watch(CLOCK_STATE, async () => {
             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
           />
         </div>
+      </div>
+      <div class="mx-auto w-28 pt-2">
+        <input
+          type="text"
+          placeholder="title"
+          v-model="currentAlarm.title"
+          class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+        />
       </div>
       <div class="flex items-center justify-center">
         <button
@@ -134,6 +153,22 @@ watch(CLOCK_STATE, async () => {
           </p>
         </div>
         <div class="flex gap-1">
+          <div class="cursor-pointer opacity-70">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="h-6 w-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+              />
+            </svg>
+          </div>
           <label
             :for="time.id?.toString()"
             class="relative inline-flex cursor-pointer items-center"

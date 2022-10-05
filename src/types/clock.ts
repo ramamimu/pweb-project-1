@@ -4,6 +4,7 @@ export type clockTypes = {
   second?: number | string;
   status?: boolean;
   id?: number;
+  title?: string;
 };
 
 export type currentClockTypes = {
