@@ -64,7 +64,7 @@ watch(CLOCK_STATE, async () => {
   let minute = CLOCK_STATE.getMinutes;
 
   ALARM_STATE.alarm.forEach(async (item) => {
-    if (item.hour === hour && item.minute == minute && item.status) {
+    if (item.hour == hour && item.minute == minute && item.status) {
       AUDIO_STATE.startAudio();
       item.status = false;
       ALARM_STATE.isAlarmActive = true;
