@@ -112,6 +112,17 @@ export const useClock = defineStore("clock", () => {
 export const useAlarm = defineStore("alarm", () => {
   const alarm: Ref<clockTypes[]> = ref([]);
   const isAlarmActive: Ref<boolean> = ref(false);
+  const snooze: {
+    status: boolean;
+    hour: number;
+    minute: number;
+    count: number;
+  } = reactive({
+    status: false,
+    hour: 0,
+    minute: 0,
+    count: 0,
+  });
 
   function setAlarm(
     id: number,
@@ -150,7 +161,19 @@ export const useAlarm = defineStore("alarm", () => {
     alarm.value.splice(index, 1);
   }
 
-  return { alarm, isAlarmActive, setAlarm, deleteAlarm };
+  function setSnooze(hour: number, minute: number) {
+    if (snooze.count <= 3) {
+      snooze.hour = hour;
+      snooze.minute = minute;
+      snooze.status = true;
+      snooze.count += 1;
+    } else {
+      snooze.status = false;
+      snooze.count += 0;
+    }
+  }
+
+  return { alarm, isAlarmActive, snooze, setAlarm, deleteAlarm, setSnooze };
 });
 
 export const useTimer = defineStore("timer", () => {
@@ -332,7 +355,7 @@ export const useToast = defineStore("toast", () => {
     toast.value.message = message;
     toast.value.isSuccess = isSuccess;
     setTimeout(() => {
-      hideToast();
+      if (message == toast.value.message) hideToast();
     }, 3000);
   }
 

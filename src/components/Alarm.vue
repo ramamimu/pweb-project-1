@@ -85,9 +85,30 @@ watch(CLOCK_STATE, async () => {
 
       setTimeout(() => {
         item.status = true;
-        ALARM_STATE.isAlarmActive = false;
-        LOGIC_UI_STATE.clock.popUp = false;
-        AUDIO_STATE.stopAudio();
+        if (!ALARM_STATE.snooze.status) {
+          ALARM_STATE.isAlarmActive = false;
+          LOGIC_UI_STATE.clock.popUp = false;
+          AUDIO_STATE.stopAudio();
+        }
+        updateStorage();
+      }, 60000);
+    } else if (
+      ALARM_STATE.snooze.hour == hour &&
+      ALARM_STATE.snooze.minute == minute &&
+      ALARM_STATE.snooze.status
+    ) {
+      AUDIO_STATE.startAudio();
+      ALARM_STATE.isAlarmActive = true;
+      LOGIC_UI_STATE.clock.popUp = true;
+      LOGIC_UI_STATE.popUpAlarmTitle = item.title;
+
+      setTimeout(() => {
+        item.status = true;
+        if (!ALARM_STATE.snooze.status) {
+          ALARM_STATE.isAlarmActive = false;
+          LOGIC_UI_STATE.clock.popUp = false;
+          AUDIO_STATE.stopAudio();
+        }
         updateStorage();
       }, 60000);
     }

@@ -45,7 +45,7 @@ npm run build
 
 [x] change alert being popup props
 
-[] snooze
+[x] snooze
 
 - edit options
 
