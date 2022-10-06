@@ -29,6 +29,7 @@ const alarm: {
 });
 
 const sound: Ref<Number> = ref(0);
+const flag: Ref<boolean> = ref(false);
 
 let audio: Ref<HTMLAudioElement | null> = ref(null);
 
@@ -73,10 +74,12 @@ const days = ref([
 ]);
 
 watch(sound, async (newVal) => {
-  audio.value?.pause();
-  audio.value = null;
-  audio.value = new Audio(listAudio.value[parseInt(newVal.toString())]);
-  await audio.value?.play();
+  if (flag.value) {
+    audio.value?.pause();
+    audio.value = null;
+    audio.value = new Audio(listAudio.value[parseInt(newVal.toString())]);
+    await audio.value?.play();
+  }
 });
 
 onMounted(() => {
@@ -88,8 +91,7 @@ onMounted(() => {
   }
   sound.value = ALARM_STATE.alarm[props.indexAlarm].sound;
   setTimeout(() => {
-    audio.value?.pause();
-    audio.value = null;
+    flag.value = true;
   }, 25);
 });
 
