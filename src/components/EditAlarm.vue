@@ -1,6 +1,11 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted, onUpdated, type Ref } from "vue";
+import { ref, reactive, onMounted, onUpdated, type Ref, watch } from "vue";
 import { useAlarm, useLogicUI, useToast } from "@/stores/store";
+import Audio1 from "@/assets/clock-alarm.mp3";
+import Audio2 from "@/assets/fast-bip.mp3";
+import Audio3 from "@/assets/nuclear.mp3";
+import Audio4 from "@/assets/panik.mp3";
+import Audio5 from "@/assets/slow.mp3";
 
 const props = defineProps({
   indexAlarm: {
@@ -24,6 +29,10 @@ const alarm: {
 });
 
 const sound: Ref<Number> = ref(0);
+
+let audio: Ref<HTMLAudioElement | null> = ref(null);
+
+let listAudio: Ref<string[]> = ref([Audio1, Audio2, Audio3, Audio4, Audio5]);
 
 const days = ref([
   {
@@ -63,8 +72,11 @@ const days = ref([
   },
 ]);
 
-onUpdated(() => {
-  console.log("updated ", sound.value);
+watch(sound, async (newVal) => {
+  audio.value?.pause();
+  audio.value = null;
+  audio.value = new Audio(listAudio.value[parseInt(newVal.toString())]);
+  await audio.value?.play();
 });
 
 onMounted(() => {
@@ -75,6 +87,10 @@ onMounted(() => {
     days.value[i].status = ALARM_STATE.alarm[props.indexAlarm].repeat[i];
   }
   sound.value = ALARM_STATE.alarm[props.indexAlarm].sound;
+  setTimeout(() => {
+    audio.value?.pause();
+    audio.value = null;
+  }, 25);
 });
 
 function saveEdit() {
@@ -105,6 +121,9 @@ function saveEdit() {
   } else if (isAlarmSame) {
     TOAST_STATE.showToast("Alarm already exist", false);
   } else {
+    audio.value?.pause();
+    audio.value = null;
+
     // array of days
     for (let i = 0; i < days.value.length; i++) {
       ALARM_STATE.alarm[props.indexAlarm].repeat[i] = days.value[i].status;
@@ -195,7 +214,7 @@ function saveEdit() {
             <label
               for="default-radio-1"
               class="ml-2 text-sm font-medium text-gray-900"
-              >Default radio</label
+              >Default</label
             >
           </div>
           <div class="flex items-center">
@@ -211,7 +230,7 @@ function saveEdit() {
             <label
               for="default-radio-2"
               class="ml-2 text-sm font-medium text-gray-900"
-              >Checked state</label
+              >fast net net</label
             >
           </div>
           <div class="flex items-center">
@@ -227,7 +246,7 @@ function saveEdit() {
             <label
               for="default-radio-3"
               class="ml-2 text-sm font-medium text-gray-900"
-              >another</label
+              >danger</label
             >
           </div>
           <div class="flex items-center">
@@ -243,7 +262,7 @@ function saveEdit() {
             <label
               for="default-radio-4"
               class="ml-2 text-sm font-medium text-gray-900"
-              >an others</label
+              >nuclear</label
             >
           </div>
           <div class="flex items-center">
@@ -259,7 +278,7 @@ function saveEdit() {
             <label
               for="default-radio-5"
               class="ml-2 text-sm font-medium text-gray-900"
-              >is amazed</label
+              >slow</label
             >
           </div>
         </div>
@@ -273,7 +292,11 @@ function saveEdit() {
         </button>
         <button
           class="ml-5 bg-red-600 px-5 py-2 font-bold text-white hover:bg-red-700"
-          @click="LOGIC_UI_STATE.clock.editAlarm = false"
+          @click="
+            LOGIC_UI_STATE.clock.editAlarm = false;
+            audio?.pause();
+            audio = null;
+          "
         >
           close
         </button>

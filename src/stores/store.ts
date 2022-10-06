@@ -6,8 +6,12 @@ import type {
   Stopwatch,
   Timer,
 } from "@/types/clock";
-import Audios from "@/assets/clock-alarm.mp3";
 import type { Ref } from "vue";
+import Audio1 from "@/assets/clock-alarm.mp3";
+import Audio2 from "@/assets/fast-bip.mp3";
+import Audio3 from "@/assets/nuclear.mp3";
+import Audio4 from "@/assets/panik.mp3";
+import Audio5 from "@/assets/slow.mp3";
 
 const getHour = (hour: number | string): number | string => {
   hour < 10 && (hour = "0" + hour.toString());
@@ -330,11 +334,12 @@ export const useStopwatch = defineStore("stopwatch", () => {
 export const useAudio = defineStore("audio", () => {
   let audio: Ref<HTMLAudioElement | null> = ref(null);
   let status: Ref<boolean> = ref(false);
+  let listAudio: Ref<string[]> = ref([Audio1, Audio2, Audio3, Audio4, Audio5]);
 
-  function startAudio(): void {
+  function startAudio(index: number): void {
     if (!status.value) {
       status.value = true;
-      audio.value = new Audio(Audios);
+      audio.value = new Audio(listAudio.value[index]);
       audio.value.play();
       audio.value.loop = true;
     }

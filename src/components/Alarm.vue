@@ -76,14 +76,16 @@ watch(CLOCK_STATE, async () => {
   let hour = CLOCK_STATE.getHours;
   let minute = CLOCK_STATE.getMinutes;
 
-  ALARM_STATE.alarm.forEach(async (item) => {
+  ALARM_STATE.alarm.forEach(async (item, index) => {
     if (
       item.repeat[new Date().getDay()] &&
       item.hour == hour &&
       item.minute == minute &&
       item.status
     ) {
-      AUDIO_STATE.startAudio();
+      AUDIO_STATE.startAudio(
+        parseInt(ALARM_STATE.alarm[index].sound.toString())
+      );
       item.status = false;
       ALARM_STATE.isAlarmActive = true;
       LOGIC_UI_STATE.clock.popUp = true;
@@ -104,7 +106,7 @@ watch(CLOCK_STATE, async () => {
       ALARM_STATE.snooze.minute == minute &&
       ALARM_STATE.snooze.status
     ) {
-      AUDIO_STATE.startAudio();
+      AUDIO_STATE.startAudio(0);
       ALARM_STATE.isAlarmActive = true;
       LOGIC_UI_STATE.clock.popUp = true;
       LOGIC_UI_STATE.popUpAlarmTitle = item.title;

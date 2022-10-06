@@ -49,6 +49,8 @@ npm run build
 
 - edit options
 
-[] repeatable alarm in daily or pick in calendar
+[x] repeatable alarm in daily
 
-[] custom alarm sound
+[] repeatable pick on calendar
+
+[x] custom alarm sound

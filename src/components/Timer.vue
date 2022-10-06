@@ -18,7 +18,7 @@ watch(TIMER_STATE.timer, (newVal) => {
   let distance = TIMER_STATE.msTimer;
 
   if (now > distance && TIMER_STATE.timer.status) {
-    AUDIO_STATE.startAudio();
+    AUDIO_STATE.startAudio(0);
     LOGIC_UI_STATE.clock.popUp = true;
   }
 });
