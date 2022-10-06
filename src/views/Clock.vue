@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DigitalClock from "@/components/DigitalClock.vue";
 import Alarm from "@/components/Alarm.vue";
+import EditAlarm from "@/components/EditAlarm.vue";
 import Timer from "@/components/Timer.vue";
 import Stopwatch from "@/components/Stopwatch.vue";
 import PopUp from "@/components/PopUp.vue";
@@ -42,6 +43,10 @@ onMounted(() => {
   <div class="h-screen bg-slate-50">
     <pop-up />
     <toast v-if="TOAST_STATE.toast.status" />
+    <EditAlarm
+      v-if="LOGIC_UI_STATE.clock.editAlarm"
+      :indexAlarm="LOGIC_UI_STATE.propsEditAlarm.index"
+    />
     <div
       class="container mx-auto flex h-full flex-col items-center justify-center"
     >

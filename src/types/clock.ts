@@ -5,6 +5,7 @@ export type clockTypes = {
   status?: boolean;
   id?: number;
   title?: string;
+  repeat?: boolean[];
 };
 
 export type currentClockTypes = {
@@ -13,6 +14,7 @@ export type currentClockTypes = {
   timer: boolean;
   stopwatch: boolean;
   popUp: boolean;
+  editAlarm: boolean;
 };
 
 export interface Timer {

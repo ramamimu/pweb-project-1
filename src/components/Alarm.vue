@@ -26,10 +26,12 @@ const currentAlarm: {
   hours: number;
   minutes: number;
   title: string;
+  repeat: boolean[];
 } = reactive({
   hours: 0,
   minutes: 0,
   title: "",
+  repeat: [true, true, true, true, true, true, true],
 });
 
 function updateStorage() {
@@ -75,7 +77,12 @@ watch(CLOCK_STATE, async () => {
   let minute = CLOCK_STATE.getMinutes;
 
   ALARM_STATE.alarm.forEach(async (item) => {
-    if (item.hour == hour && item.minute == minute && item.status) {
+    if (
+      item.repeat[new Date().getDay()] &&
+      item.hour == hour &&
+      item.minute == minute &&
+      item.status
+    ) {
       AUDIO_STATE.startAudio();
       item.status = false;
       ALARM_STATE.isAlarmActive = true;
@@ -174,7 +181,13 @@ watch(CLOCK_STATE, async () => {
           </p>
         </div>
         <div class="flex gap-1">
-          <div class="cursor-pointer opacity-70">
+          <div
+            class="cursor-pointer opacity-70"
+            @click="
+              LOGIC_UI_STATE.clock.editAlarm = true;
+              LOGIC_UI_STATE.propsEditAlarm.index = index;
+            "
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

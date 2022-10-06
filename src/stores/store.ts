@@ -48,8 +48,10 @@ export const useLogicUI = defineStore("logicUI", () => {
     timer: false,
     stopwatch: false,
     popUp: false,
+    editAlarm: false,
   });
 
+  const propsEditAlarm: { index: number } = reactive({ index: 0 });
   const popUpAlarmTitle: Ref<string | undefined> = ref("");
 
   function changeView(currentState: string) {
@@ -76,7 +78,7 @@ export const useLogicUI = defineStore("logicUI", () => {
     }
   }
 
-  return { clock, popUpAlarmTitle, changeView };
+  return { clock, popUpAlarmTitle, propsEditAlarm, changeView };
 });
 
 export const useClock = defineStore("clock", () => {
@@ -110,7 +112,16 @@ export const useClock = defineStore("clock", () => {
 });
 
 export const useAlarm = defineStore("alarm", () => {
-  const alarm: Ref<clockTypes[]> = ref([]);
+  interface Alarm {
+    hour: number | string;
+    minute: number | string;
+    status?: boolean;
+    id?: number;
+    title: string;
+    repeat: boolean[];
+    sound: Number;
+  }
+  const alarm: Ref<Alarm[]> = ref([]);
   const isAlarmActive: Ref<boolean> = ref(false);
   const snooze: {
     status: boolean;
@@ -130,12 +141,14 @@ export const useAlarm = defineStore("alarm", () => {
     minute: number | string,
     title: string
   ) {
-    let temp_alarm: clockTypes = {
+    let temp_alarm: Alarm = {
       id: id,
       hour: hour,
       minute: minute,
       title: title,
       status: true,
+      repeat: [true, true, true, true, true, true, true],
+      sound: 0,
     };
 
     const TOAST_STATE = useToast();
