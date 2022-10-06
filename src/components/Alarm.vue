@@ -69,6 +69,7 @@ function selectAlarm(event: any, time: clockTypes) {
 
 function deleteAlarm(index: number) {
   ALARM_STATE.deleteAlarm(index);
+  TOAST_STATE.showToast("Alarm deleted", true);
   updateStorage();
 }
 
